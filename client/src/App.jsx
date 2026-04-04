@@ -20,7 +20,7 @@ function App() {
   // Game state controls
   const [status, setStatus] = useState("waiting")
   const [creatorId, setCreatorId] = useState(null)
-  const [settings, setSettings] = useState({ lives: 3, timer: 10, alphabetSet: "ABCDEFGHIJKLMNOPQRSTUVWXYZ" })
+  const [settings, setSettings] = useState({ lives: 3, timer: 10, alphabetSet: "ABCDEFGHIKLMNOPRSTUVY" })
 
   const [gameOver, setGameOver] = useState(false)
   const [winner, setWinner] = useState(null)

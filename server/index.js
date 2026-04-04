@@ -122,7 +122,7 @@ io.on("connection", (socket) => {
       settings: {
         timer: defaults.DEFAULT_TIMER,
         lives: defaults.DEFAULT_LIVES,
-        alphabetSet: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        alphabetSet: "ABCDEFGHIKLMNOPRSTUVY"
       },
       players: [{ id: socket.id, name: playerName, lives: defaults.DEFAULT_LIVES, isSpectator: false, lettersUsed: [] }],
       currentPlayerIndex: 0,
