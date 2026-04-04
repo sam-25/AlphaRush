@@ -16,7 +16,8 @@ module.exports = {
 
   // --- Room Configuration ---
   ROOM_CODE_LENGTH: 4,
-  PORT: 3001,
+  // Use the PORT from the hosting platform if available, otherwise default to 3001
+  PORT: process.env.PORT || 3001,
 
   // --- Room Statuses ---
   STATUS_WAITING: "waiting",
