@@ -1,0 +1,15 @@
+# Don't copy any node_modules folders — the Dockerfile runs npm install fresh
+client/node_modules
+server/node_modules
+
+# Don't copy test files — not needed in production
+server/test-socket.js
+server/testSocket.js
+client/test_bot.js
+
+# Don't copy markdown/notes files
+**/*.md
+
+# Don't copy git files
+.git
+.gitignore

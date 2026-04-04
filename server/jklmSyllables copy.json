@@ -1,0 +1,38 @@
+[
+  "AB", "AC", "AD", "AF", "AG", "AL", "AM", "AN", "AP", "AR", "AS", "AT", "AU", "AV", "AW", "AY", 
+  "BA", "BE", "BI", "BO", "BU", "BY",
+  "CA", "CE", "CI", "CO", "CU", "CH",
+  "DA", "DE", "DI", "DO", "DU",
+  "EA", "ED", "EE", "EL", "EM", "EN", "EP", "ER", "ES", "ET", "EU", "EV", "EX",
+  "FA", "FE", "FI", "FO", "FU", "FL", "FR",
+  "GA", "GE", "GI", "GO", "GU", "GH", "GL", "GR",
+  "HA", "HE", "HI", "HO", "HU",
+//fine till here
+
+  "IA", "IC", "ID", "IF", "IG", "IL", "IM", "IN", "IP", "IR", "IS", "IT", "IV",
+  "JA", "JE", "JO", "JU",
+  "KA", "KE", "KI", "KO", "KU", 
+  "LA", "LE", "LI", "LO", "LU", "LY",
+  "MA", "ME", "MI", "MP", "MO", "MU", "MY",
+  "NA", "NE", "NI", "NO", "NU", "NY",
+  "OA", "OB", "OC", "OD", "OF", "OG", "OH", "OI", "OK", "OL", "OM", "ON", "OO", "OP", "OR", "OS", "OT", "OU", "OV", "OW", 
+  "PA", "PE", "PI", "PO", "PU", "PH", "PL", "PR", 
+  "QU", 
+
+
+  "RA", "RE", "RI", "RO", "RU", "RY",
+  "SA", "SE", "SI", "SO", "SU", "SY", "SH", "SL", "SM", "SN", "SP", "ST", "SW",
+  "TA", "TE", "TI", "TO", "TU", "TY", "TH", "TR", "TW",
+  "UA", "UB", "UC", "UD", "UG", "UM", "UN", "UP", "UR", "US", "UT",
+  "VA", "VE", "VI", "VO",
+  "WA", "WE", "WI", "WO", "WH", 
+  "YA", "YE", "YI", "YO", "YU",
+  "ZA", "ZE", "ZI", "ZO",
+
+  "ALL", "AND", "ANY", "ARE", "ART", "ATE", "BUT", "CAN", "CAR", "CAT", "CON", "DAY", "EAR", "EAT", "ENT", "EST", 
+  "FOR", "GET", "HAS", "HAT", "HER", "HIS", "ING", "ION", "MAN", "NOT", "OUT", "PAN", "PEN", "PER", "PIN", "PRO", 
+  "RES", "SHE", "TAR", "TEN", "TER", "THA", "THE", "TIO", "VER", "WAS", "YOU",
+  "ACH", "ACK", "ACT", "AGE", "AIL", "AIN", "AIR", "AKE", "ALE", "AME", "AMP", "ANT", "ASH", "AST", "AWM", "BAK", 
+  "BAL", "BAN", "BAR", "BAT", "BER", "BET", "BIN", "BIT", "BLE", "BOA", "BOO", "BOR", "BOT", "BOW", "BRA", "BRO", 
+  "BUG", "BUM", "BUR", "BUS", "BUT", "CAM", "CAP", "CAR", "CAS", "CAT", "CEN", "CHA"
+]

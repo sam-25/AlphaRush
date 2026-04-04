@@ -1,0 +1,25 @@
+/* Import all of Tailwind's utility classes */
+@import "tailwindcss";
+
+/* Apply the Outfit font to everything + smooth scrolling */
+@layer base {
+  html {
+    font-family: "Outfit", sans-serif;
+    scroll-behavior: smooth;
+  }
+}
+
+/* Custom animation: a gentle glow pulse for the bomb when time is low */
+@keyframes bomb-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(239, 68, 68, 0.7); }
+}
+
+/* Custom animation: the syllable box has a subtle breathing glow */
+@keyframes syllable-glow {
+  0%, 100% { box-shadow: 0 0 15px rgba(234, 179, 8, 0.2); }
+  50% { box-shadow: 0 0 30px rgba(234, 179, 8, 0.4); }
+}
+
+/* We can use these animations with Tailwind's arbitrary values: */
+/* className="animate-[bomb-glow_1s_ease-in-out_infinite]" */

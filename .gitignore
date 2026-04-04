@@ -1,0 +1,9 @@
+# Dependencies — these get installed from package.json, no need to store them
+client/node_modules
+server/node_modules
+
+# Build output — Render will build fresh from the Dockerfile
+client/dist
+
+# OS files
+.DS_Store
