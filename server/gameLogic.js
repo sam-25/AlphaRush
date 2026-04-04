@@ -17,18 +17,18 @@ const dictionary = new Set(wordList)
 
 // --- SYLLABLES ---
 // ==========================================
-// PURE PHONETIC JKLM BOMBPARTY GENERATOR
+// CURATED PHONETIC SYLLABLE GENERATOR
 // ==========================================
 // After extensive tuning, algorithmic substring extraction from dictionaries
 // (even common ones) inevitably generates consonant noise (e.g. `TP` from `output`).
-// JKLM players expect phonetic syllables consisting of vowels and digraphs.
+// Players expect phonetic syllables consisting of vowels and digraphs.
 // We load exactly this list from a static JSON.
 
-const jklmSyllables = require("./jklmSyllables.json")
-console.log(`✅ Loaded ${jklmSyllables.length} purely curated phonetic JKLM syllables.`)
+const syllables = require("./syllables.json")
+console.log(`✅ Loaded ${syllables.length} purely curated phonetic syllables.`)
 
 function getRandomSyllable() {
-  return jklmSyllables[Math.floor(Math.random() * jklmSyllables.length)]
+  return syllables[Math.floor(Math.random() * syllables.length)]
 }
 
 // Check if a word is valid:
