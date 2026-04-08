@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AlphaRush Sound Test v2</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0a0f;
+      color: white;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      background: linear-gradient(to right, #facc15, #f97316, #ef4444);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    p.sub { color: #888; margin-bottom: 30px; font-size: 0.9rem; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      max-width: 800px;
+      width: 100%;
+    }
+    button {
+      background: #1a1a2e;
+      border: 2px solid #333;
+      color: white;
+      padding: 20px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.2s;
+      text-align: left;
+    }
+    button:hover { border-color: #facc15; background: #1e1e35; transform: translateY(-2px); }
+    button:active { transform: scale(0.97); }
+    button .emoji { font-size: 1.5rem; display: block; margin-bottom: 6px; }
+    button .label { color: #aaa; font-size: 0.72rem; display: block; margin-top: 4px; }
+    .countdown-section {
+      margin-top: 30px;
+      text-align: center;
+      max-width: 800px;
+      width: 100%;
+    }
+    .countdown-section h2 { color: #ef4444; margin-bottom: 12px; font-size: 1.1rem; }
+    .countdown-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .countdown-btns button { padding: 14px 20px; text-align: center; min-width: 70px; }
+    #seq-btn {
+      margin-top: 20px;
+      background: linear-gradient(135deg, #7c3aed, #4f46e5);
+      border-color: #7c3aed;
+      padding: 16px 32px;
+      text-align: center;
+    }
+    #seq-btn:hover { border-color: #a78bfa; }
+  </style>
+</head>
+<body>
+  <h1>🔊 AlphaRush Sound Test v2</h1>
+  <p class="sub">Redesigned — proper envelopes, soft waveforms, musical intervals</p>
+
+  <div class="grid">
+    <button onclick="playGameStart()">
+      <span class="emoji">🎮</span>
+      Game Start
+      <span class="label">Bright ascending C-major jingle</span>
+    </button>
+    <button onclick="playNewTurn()">
+      <span class="emoji">🔄</span>
+      New Turn
+      <span class="label">Subtle soft pop</span>
+    </button>
+    <button onclick="playCorrect()">
+      <span class="emoji">✅</span>
+      Correct Answer
+      <span class="label">Two-note ascending chime</span>
+    </button>
+    <button onclick="playWrong()">
+      <span class="emoji">❌</span>
+      Wrong Answer
+      <span class="label">Gentle low double-boop</span>
+    </button>
+    <button onclick="playLoseLife()">
+      <span class="emoji">💥</span>
+      Lose Life (Bomb)
+      <span class="label">Deep sub-bass hit + impact crack</span>
+    </button>
+    <button onclick="playEliminated()">
+      <span class="emoji">☠️</span>
+      Player Eliminated
+      <span class="label">Descending minor chord</span>
+    </button>
+    <button onclick="playWinner()">
+      <span class="emoji">🏆</span>
+      Winner
+      <span class="label">G-major victory arpeggio + sustained chord</span>
+    </button>
+    <button onclick="playLifeGain()">
+      <span class="emoji">💖</span>
+      Life Gained
+      <span class="label">Ascending sparkle chime</span>
+    </button>
+  </div>
+
+  <div class="countdown-section">
+    <h2>⏱️ Countdown Ticks (Last 5 Seconds)</h2>
+    <div class="countdown-btns">
+      <button onclick="playCountdownTick(5)">5</button>
+      <button onclick="playCountdownTick(4)">4</button>
+      <button onclick="playCountdownTick(3)">3</button>
+      <button onclick="playCountdownTick(2)">2</button>
+      <button onclick="playCountdownTick(1)">1</button>
+    </div>
+    <button id="seq-btn" onclick="playFullCountdown()">
+      <span class="emoji">🎵</span>
+      Play Full 5→1 Countdown
+    </button>
+  </div>
+
+  <script>
+    const onlineSounds = {
+      gameStart: new Audio('/sounds/osu-start.wav'),
+      newTurn: new Audio('/sounds/osu-turn.wav'),
+      winner: new Audio('/sounds/osu-winner.wav')
+    };
+
+    let ctx = null;
+    function getCtx() {
+      if (!ctx || ctx.state === 'closed') {
+        ctx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (ctx.state === 'suspended') {
+        ctx.resume();
+      }
+      return ctx;
+    }
+
+    // Basic oscillator (Sine/Square/Triangle)
+    function playOsc(type, freq, duration, vol, pitchSweep = null) {
+      const c = getCtx();
+      const t = c.currentTime;
+      const osc = c.createOscillator();
+      const gain = c.createGain();
+
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, t);
+      if (pitchSweep) {
+        osc.frequency.exponentialRampToValueAtTime(pitchSweep, t + duration);
+      }
+
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(vol, t + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
+
+      osc.connect(gain);
+      gain.connect(c.destination);
+      osc.start(t);
+      osc.stop(t + duration);
+    }
+
+    // Noise generator
+    function playNoise(duration, vol, filterFreq, filterType = 'lowpass', sweepTo = null) {
+      const c = getCtx();
+      const t = c.currentTime;
+      const bufferSize = c.sampleRate * duration;
+      const buffer = c.createBuffer(1, bufferSize, c.sampleRate);
+      const output = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+          output[i] = Math.random() * 2 - 1;
+      }
+
+      const whiteNoise = c.createBufferSource();
+      whiteNoise.buffer = buffer;
+
+      const filter = c.createBiquadFilter();
+      filter.type = filterType;
+      filter.frequency.setValueAtTime(filterFreq, t);
+      if (sweepTo) {
+        filter.frequency.exponentialRampToValueAtTime(sweepTo, t + duration);
+      }
+
+      const gain = c.createGain();
+      gain.gain.setValueAtTime(vol, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
+
+      whiteNoise.connect(filter);
+      filter.connect(gain);
+      gain.connect(c.destination);
+      whiteNoise.start(t);
+    }
+
+    function playGameStart() {
+      const clone = onlineSounds.gameStart.cloneNode();
+      clone.volume = 1.0;
+      clone.play();
+    }
+
+    function playNewTurn() {
+      const clone = onlineSounds.newTurn.cloneNode();
+      clone.volume = 0.5;
+      clone.play();
+    }
+
+    function playCorrect() {
+      playOsc('sine', 1046.50, 0.4, 0.2);
+      setTimeout(() => playOsc('sine', 1318.51, 0.6, 0.2), 80);
+    }
+
+    function playWrong() {
+      playOsc('square', 150, 0.3, 0.15);
+      setTimeout(() => playOsc('square', 150, 0.4, 0.15), 100);
+    }
+
+    function playLoseLife() {
+      playOsc('sine', 150, 0.8, 0.5, 40);
+      playNoise(0.7, 0.6, 1000, 'lowpass', 100);
+    }
+
+    function playEliminated() {
+      const freqs = [392.00, 370.00, 349.23, 329.63];
+      freqs.forEach((f, i) => { setTimeout(() => playOsc('square', f, 0.4, 0.1), i * 250); });
+    }
+
+    function playWinner() {
+      const clone = onlineSounds.winner.cloneNode();
+      clone.volume = 1.0;
+      clone.play();
+
+      // Start fading out at 2000ms and fully stop by 3000ms
+      setTimeout(() => {
+        const fadeAudio = setInterval(() => {
+          if (clone.volume > 0.06) {
+            clone.volume -= 0.05;
+          } else {
+            clearInterval(fadeAudio);
+            clone.pause();
+            clone.currentTime = 0;
+          }
+        }, 50);
+      }, 2000);
+    }
+
+    function playLifeGain() {
+      playOsc('square', 880, 0.1, 0.1);
+      setTimeout(() => playOsc('square', 987, 0.1, 0.1), 80);
+      setTimeout(() => playOsc('square', 1108, 0.1, 0.1), 160);
+      setTimeout(() => playOsc('square', 1318, 0.1, 0.1), 240);
+      setTimeout(() => playOsc('square', 1760, 0.4, 0.1), 320);
+    }
+
+    function playCountdownTick(secondsLeft) {
+      playNoise(0.05, 0.3, 3000, 'highpass');
+      if (secondsLeft <= 3) {
+        setTimeout(() => playNoise(0.05, 0.15, 4000, 'highpass'), 150);
+      }
+    }
+
+    function playFullCountdown() {
+      for (let i = 5; i >= 1; i--) {
+        setTimeout(() => playCountdownTick(i), (5 - i) * 1000);
+      }
+    }
+  </script>
+</body>
+</html>

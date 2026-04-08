@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 
 // "onExplode" is a function passed by App.jsx — called when time runs out
-function BombTimer({ startTime, onExplode }) {
+function BombTimer({ startTime, onExplode, onCountdownTick }) {
   const [timeLeft, setTimeLeft] = useState(startTime)
   const [hasExploded, setHasExploded] = useState(false)
 
@@ -20,7 +20,12 @@ function BombTimer({ startTime, onExplode }) {
           if (onExplode) onExplode()
           return 0
         }
-        return prev - 1
+        const nextVal = prev - 1
+        // 🔊 Play countdown tick for last 5 seconds
+        if (nextVal <= 5 && nextVal > 0 && onCountdownTick) {
+          onCountdownTick(nextVal)
+        }
+        return nextVal
       })
     }, 1000)
 

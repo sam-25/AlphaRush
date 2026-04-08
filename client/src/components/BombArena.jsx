@@ -1,7 +1,7 @@
 import React from 'react';
 import BombTimer from './BombTimer';
 
-export default function BombArena({ players, currentPlayerIndex, myId, timerSettings, timerKey, onExplode }) {
+export default function BombArena({ players, currentPlayerIndex, myId, timerSettings, timerKey, onExplode, onCountdownTick }) {
   // Arena Configuration
   const arenaRadius = 125; // Pixels from center to player avatar center
   
@@ -39,7 +39,7 @@ export default function BombArena({ players, currentPlayerIndex, myId, timerSett
         {/* Since BombTimer has mt-6 flex-col, we might need to override its margins if we could, 
             but for now we'll just wrap it and it should be fine. Actually, let's wrap it tightly. */}
         <div className="-mt-6"> 
-          <BombTimer key={timerKey} startTime={timerSettings.timer} onExplode={onExplode} />
+          <BombTimer key={timerKey} startTime={timerSettings.timer} onExplode={onExplode} onCountdownTick={onCountdownTick} />
         </div>
       </div>
 

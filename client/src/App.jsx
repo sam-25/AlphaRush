@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import BombTimer from './components/BombTimer'
 import BombArena from './components/BombArena'
 import PlayerList from './components/PlayerList'
 import Lobby from './components/Lobby'
 import socket from './socket'
+import useGameSounds from './hooks/useGameSounds'
 
 function App() {
   const [guess, setGuess] = useState("")
@@ -27,6 +28,12 @@ function App() {
   
   const inputRef = useRef(null)
   const feedbackTimeoutRef = useRef(null)
+  const prevStatusRef = useRef(status)
+  const prevPlayersRef = useRef(players)
+  const prevTurnRef = useRef(-1)
+
+  // Sound effects
+  const sounds = useGameSounds()
 
   // --- CURRENT PLAYER STATUS ---
   const isMyTurn = players.length > 0 && players[currentPlayerIndex]?.id === socket.id
@@ -54,11 +61,53 @@ function App() {
 
     // The big game state update
     socket.on("game-state", (state) => {
+      // 🔊 Detect game start (waiting → playing)
+      if (prevStatusRef.current === "waiting" && state.status === "playing" && !state.gameOver) {
+        sounds.playGameStart()
+      }
+      prevStatusRef.current = state.status
+
+      // 🔊 Detect new turn (currentPlayerIndex changed while playing)
+      if (state.status === "playing" && !state.gameOver) {
+        if (
+          prevStatusRef.current === "playing" && 
+          prevTurnRef.current !== -1 && 
+          prevTurnRef.current !== state.currentPlayerIndex
+        ) {
+          sounds.playNewTurn()
+        }
+        prevTurnRef.current = state.currentPlayerIndex
+        setCurrentPlayerIndex(state.currentPlayerIndex)
+      } else {
+        prevTurnRef.current = state.currentPlayerIndex
+        setCurrentPlayerIndex(state.currentPlayerIndex)
+      }
+
+      // 🔊 Detect life changes (loss or gain)
+      if (state.status === "playing" && !state.gameOver && prevPlayersRef.current.length > 0) {
+        state.players.forEach((player) => {
+          const prevPlayer = prevPlayersRef.current.find(p => p.id === player.id)
+          if (prevPlayer) {
+            if (player.lives < prevPlayer.lives && player.lives > 0) {
+              sounds.playLoseLife()
+            } else if (player.lives > prevPlayer.lives) {
+              sounds.playLifeGain()
+            }
+          }
+        })
+      }
+
+      // 🔊 Detect winner
+      if (state.gameOver && state.winner) {
+        sounds.playWinner()
+      }
+
+      prevPlayersRef.current = state.players
+
       setStatus(state.status)
       setCreatorId(state.creatorId)
       if (state.settings) setSettings(state.settings)
       setPlayers(state.players)
-      setCurrentPlayerIndex(state.currentPlayerIndex)
       setSyllable(state.syllable)
       setGameOver(state.gameOver)
       setWinner(state.winner)
@@ -70,6 +119,12 @@ function App() {
 
     // Word result — now includes a "reason" from the server
     socket.on("word-result", (result) => {
+      // 🔊 Play correct/wrong sound
+      if (result.correct) {
+        sounds.playCorrect()
+      } else {
+        sounds.playWrong()
+      }
       setFeedback(result)
       if (feedbackTimeoutRef.current) clearTimeout(feedbackTimeoutRef.current)
       feedbackTimeoutRef.current = setTimeout(() => setFeedback(null), 4000)
@@ -77,6 +132,8 @@ function App() {
 
     // Player eliminated alert
     socket.on("player-eliminated", (name) => {
+      // 🔊 Play elimination sound
+      sounds.playEliminated()
       setFeedback({ playerName: name, word: "", correct: false, reason: `☠️ ${name} has been eliminated!` })
       if (feedbackTimeoutRef.current) clearTimeout(feedbackTimeoutRef.current)
       feedbackTimeoutRef.current = setTimeout(() => setFeedback(null), 4000)
@@ -94,7 +151,7 @@ function App() {
       socket.off("player-eliminated")
       socket.off("error-message")
     }
-  }, [])
+  }, [sounds])
 
   // Sync room code to URL
   useEffect(() => {
@@ -332,7 +389,8 @@ function App() {
           myId={socket.id} 
           timerSettings={settings} 
           timerKey={timerKey} 
-          onExplode={handleBombExplode} 
+          onExplode={handleBombExplode}
+          onCountdownTick={sounds.playCountdownTick}
         />
       </div>
 
